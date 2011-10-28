@@ -83,7 +83,11 @@ module AssetHatHelper
             File.join(AssetHat.assets_dir(type), src))
         end
         if commit_id.present? # False if file isn't committed to repo
-          src += "#{src =~ /\?/ ? '&' : '?'}#{commit_id}"
+          dirname = File.dirname(src)
+          src = case dirname
+                when '.' then File.join(commit_id, File.basename(src))
+                else          File.join(dirname, commit_id, File.basename(src))
+                end
         end
         src
       end
@@ -396,3 +400,4 @@ module AssetHatHelper
     AssetHat.cache? && !AssetHat.html_cache[type.to_sym][cache_key].blank?
   end
 end
+
