@@ -137,14 +137,14 @@ class AssetHatTest < ActiveSupport::TestCase
       ['', "'", '"'].each do |quote|
         img = '/images/foo.png'
         assert_equal(
-          "p{background:url(#{quote}#{img}?#{commit_id}#{quote})}",
+          "p{background:url(#{quote}/images/bundles/#{commit_id}/foo.png#{quote})}",
           AssetHat::CSS.add_asset_commit_ids(
             "p{background:url(#{quote}#{img}#{quote})}")
         )
 
         img = '/images/?id=foo.png'
         assert_equal(
-          "p{background:url(#{quote}#{img}&#{commit_id}#{quote})}",
+          "p{background:url(#{quote}/images/bundles/#{commit_id}/?id=foo.png#{quote})}",
           AssetHat::CSS.add_asset_commit_ids(
             "p{background:url(#{quote}#{img}#{quote})}")
         )
@@ -175,10 +175,10 @@ class AssetHatTest < ActiveSupport::TestCase
       flexmock(AssetHat, :last_commit_id => commit_id)
       flexmock(Rails, :public_path => '')
 
-      assert_equal  "p{background:url(/htc/iepngfix.htc?#{commit_id})}",
+      assert_equal  "p{background:url(/htc/bundles/#{commit_id}/iepngfix.htc)}",
                     AssetHat::CSS.add_asset_commit_ids(
                       "p{background:url(/htc/iepngfix.htc)}")
-      assert_equal  "p{background:url(/htc/?id=iepngfix&#{commit_id})}",
+      assert_equal  "p{background:url(/htc/bundles/#{commit_id}/?id=iepngfix)}",
                     AssetHat::CSS.add_asset_commit_ids(
                       "p{background:url(/htc/?id=iepngfix)}")
     end
@@ -259,3 +259,4 @@ class AssetHatTest < ActiveSupport::TestCase
   end # context 'AssetHat::JS'
 
 end
+

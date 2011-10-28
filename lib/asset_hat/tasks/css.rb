@@ -111,15 +111,25 @@ namespace :asset_hat do
         bundle_filepath = AssetHat::CSS.min_filepath(File.join(
           AssetHat.bundles_dir(type, output_options.slice(:ssl)),
           "#{args.bundle}.#{type}"))
+
+        commit_id = AssetHat.last_bundle_commit_id(args.bundle, type)
+        bundle_filepath = AssetHat.versioned_filepath(bundle_filepath, commit_id)
+
         old_bundle_size = 0.0
         new_bundle_size = 0.0
-        output     = ''
+        output = ''
         filepaths.each do |filepath|
           file_output = File.open(filepath, 'r').read
           old_bundle_size += file_output.size
 
           file_output = AssetHat::CSS.minify(file_output, min_options)
-          file_output = AssetHat::CSS.add_asset_commit_ids(file_output)
+
+          file_output = AssetHat::CSS.add_asset_commit_ids(file_output) do |src, versioned_path|
+            target = File.join(AssetHat::ASSETS_DIR, versioned_path)
+            FileUtils.makedirs(File.dirname(target))
+            FileUtils.cp(File.join(Rails.root, 'public', src), target)
+          end
+
           if asset_host.present?
             file_output = AssetHat::CSS.add_asset_hosts(
               file_output, asset_host, output_options.slice(:ssl))
@@ -193,3 +203,4 @@ namespace :asset_hat do
 
   end # namespace :css
 end # namespace :asset_hat
+

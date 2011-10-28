@@ -49,11 +49,12 @@ module AssetHat
         filepath.sub!(/^#{FileUtils.pwd}#{File::SEPARATOR}/, '')
 
         commit_id = AssetHat.last_commit_id(filepath)
-        if commit_id.present?
-          "url(#{quote}#{src}#{src =~ /\?/ ? '&' : '?'}#{commit_id}#{quote})"
-        else
-          "url(#{quote}#{src}#{quote})"
-        end
+        commit_id = "bundles/#{commit_id}" if commit_id
+
+        filepath = AssetHat.versioned_filepath(src, commit_id)
+        yield(src, filepath) if block_given?
+
+        "url(#{quote}#{filepath}#{quote})"
       end
     end
 
@@ -162,3 +163,4 @@ module AssetHat
   end
 
 end
+

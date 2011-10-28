@@ -237,6 +237,15 @@ module AssetHat
       filenames.map { |fn| File.join(dir, "#{fn}.#{type}") } : nil
   end
 
+  def self.versioned_filepath(filepath, commit_id)
+    return filepath unless commit_id.present?
+    dirname = File.dirname(filepath)
+    case dirname
+      when '.' then File.join(commit_id.to_s, File.basename(filepath))
+      else          File.join(dirname, commit_id.to_s, File.basename(filepath))
+    end
+  end
+
   # Reads <code>ActionController::Base.asset_host</code>, which can be a
   # String or Proc, and returns a String. Should behave just like Rails
   # 2.3.x's private `compute_asset_host` method, but with a simulated request.
@@ -296,3 +305,4 @@ module AssetHat
   end
 
 end
+

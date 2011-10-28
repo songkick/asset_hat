@@ -65,6 +65,9 @@ namespace :asset_hat do
       bundle_filepath = AssetHat::JS.min_filepath(File.join(
         AssetHat.bundles_dir(type), "#{args.bundle}.#{type}"))
 
+      commit_id = AssetHat.last_bundle_commit_id(args.bundle, type)
+      bundle_filepath = AssetHat.versioned_filepath(bundle_filepath, commit_id)
+
       # Concatenate and process output
       output = ''
       old_bundle_size = 0.0
@@ -142,3 +145,4 @@ namespace :asset_hat do
 
   end # namespace :js
 end # namespace :asset_hat
+

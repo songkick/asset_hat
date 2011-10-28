@@ -82,14 +82,7 @@ module AssetHatHelper
           commit_id = AssetHat.last_commit_id(
             File.join(AssetHat.assets_dir(type), src))
         end
-        if commit_id.present? # False if file isn't committed to repo
-          dirname = File.dirname(src)
-          src = case dirname
-                when '.' then File.join(commit_id, File.basename(src))
-                else          File.join(dirname, commit_id, File.basename(src))
-                end
-        end
-        src
+        AssetHat.versioned_filepath(src, commit_id)
       end
     end
 
