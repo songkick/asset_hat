@@ -233,8 +233,12 @@ module AssetHat
 
     dir = self.assets_dir(type)
     filenames = self.bundle_filenames(bundle, type)
-    filepaths = filenames.present? ?
-      filenames.map { |fn| File.join(dir, "#{fn}.#{type}") } : nil
+    return nil unless filenames.present?
+    
+    filenames.map do |fn|
+      paths = ["", ".#{type}"].map { |ext| File.join(dir, "#{fn}#{ext}") }
+      paths.find { |path| File.file?(path) }
+    end
   end
 
   def self.versioned_filepath(filepath, commit_id)
