@@ -19,12 +19,12 @@ namespace :asset_hat do
         raise "#{args.filepath} is already minified." and return
       end
 
-      input   = File.open(args.filepath, 'r').read
+      input   = File.read(args.filepath)
       output  = AssetHat::JS.minify(input, min_options)
 
       # Write minified content to file
       target_filepath = AssetHat::JS.min_filepath(args.filepath)
-      File.open(target_filepath, 'w') { |f| f.write output }
+      AssetHat.safe_write_file(target_filepath, output)
 
       # Print results
       puts "- Minified to #{target_filepath}" if verbose
@@ -73,7 +73,7 @@ namespace :asset_hat do
       old_bundle_size = 0.0
       new_bundle_size = 0.0
       filepaths.each do |filepath|
-        file_output = File.open(filepath, 'r').read
+        file_output = File.read(filepath)
         old_bundle_size += file_output.size
         unless filepath =~ /\.min\.#{type}$/ # Already minified
           file_output = AssetHat::JS.minify(file_output, min_options)
@@ -82,7 +82,7 @@ namespace :asset_hat do
         output << file_output + "\n"
       end
       FileUtils.makedirs(File.dirname(bundle_filepath))
-      File.open(bundle_filepath, 'w') { |f| f.write output }
+      AssetHat.safe_write_file(bundle_filepath, output)
 
       # Print results
       percent_saved =
