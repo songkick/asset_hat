@@ -12,7 +12,8 @@ namespace :asset_hat do
 
       css = File.open(args.filename, 'r') { |f| f.read }
       css = AssetHat::CSS.add_asset_commit_ids(css)
-      File.open(args.filename, 'w') { |f| f.write css }
+
+      AssetHat.safe_write_file(args.filename, css)
 
       puts "- Added asset commit IDs to #{args.filename}" if verbose
     end
@@ -34,7 +35,8 @@ namespace :asset_hat do
 
       css = File.open(args.filename, 'r') { |f| f.read }
       css = AssetHat::CSS.add_asset_hosts(css, asset_host)
-      File.open(args.filename, 'w') { |f| f.write css }
+
+      AssetHat.safe_write_file(args.filename, css)
 
       puts "- Added asset hosts to #{args.filename}" if verbose
     end
@@ -53,12 +55,12 @@ namespace :asset_hat do
         :engine => AssetHat.config[type]['engine']
       }.reject { |k,v| v.blank? }
 
-      input   = File.open(args.filepath, 'r').read
+      input   = File.read(args.filepath)
       output  = AssetHat::CSS.minify(input, min_options)
 
       # Write minified content to file
       target_filepath = AssetHat::CSS.min_filepath(args.filepath)
-      File.open(target_filepath, 'w') { |f| f.write output }
+      AssetHat.safe_write_file(args.filename, output)
 
       # Print results
       puts "- Minified to #{target_filepath}" if verbose
@@ -115,7 +117,7 @@ namespace :asset_hat do
         new_bundle_size = 0.0
         output     = ''
         filepaths.each do |filepath|
-          file_output = File.open(filepath, 'r').read
+          file_output = File.read(filepath)
           old_bundle_size += file_output.size
 
           file_output = AssetHat::CSS.minify(file_output, min_options)
@@ -129,7 +131,8 @@ namespace :asset_hat do
           output << file_output + "\n"
         end
         FileUtils.makedirs(File.dirname(bundle_filepath))
-        File.open(bundle_filepath, 'w') { |f| f.write output }
+
+        AssetHat.safe_write_file(bundle_filepath, output)
 
         # Print results
         percent_saved =
@@ -193,3 +196,4 @@ namespace :asset_hat do
 
   end # namespace :css
 end # namespace :asset_hat
+

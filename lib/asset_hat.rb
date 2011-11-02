@@ -295,4 +295,14 @@ module AssetHat
     html_cache = {}
   end
 
+  # Writes the content to a temp file first.
+  # Moves the temp file into the correct location (an atomic operation which
+  # won't create race conditions in which half-written files could be served)
+  def self.safe_write_file(filename, content)
+    tmp_file = filename + '.tmp'
+    File.open(tmp_file, 'w') { |f| f.write content }
+    FileUtils.mv(tmp_file, filename)
+  end
+
 end
+
