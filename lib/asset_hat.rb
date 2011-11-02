@@ -234,7 +234,7 @@ module AssetHat
     dir = self.assets_dir(type)
     filenames = self.bundle_filenames(bundle, type)
     return nil unless filenames.present?
-    
+
     filenames.map do |fn|
       paths = ["", ".#{type}"].map { |ext| File.join(dir, "#{fn}#{ext}") }
       paths.find { |path| File.file?(path) }
@@ -244,9 +244,13 @@ module AssetHat
   def self.versioned_filepath(filepath, commit_id)
     return filepath unless commit_id.present?
     dirname = File.dirname(filepath)
+
+    versioned_filename = File.basename(filepath).
+                         sub(/(\.\w+)?$/) { ".#{commit_id}#{$1}" }
+
     case dirname
-      when '.' then File.join(commit_id.to_s, File.basename(filepath))
-      else          File.join(dirname, commit_id.to_s, File.basename(filepath))
+      when '.' then versioned_filename
+      else          File.join(dirname, versioned_filename)
     end
   end
 
