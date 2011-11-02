@@ -127,7 +127,7 @@ namespace :asset_hat do
           file_output = AssetHat::CSS.add_asset_commit_ids(file_output) do |src, versioned_path|
             target = File.join(AssetHat::ASSETS_DIR, versioned_path)
             FileUtils.makedirs(File.dirname(target))
-            FileUtils.cp(File.join(Rails.root, 'public', src), target)
+            FileUtils.cp(File.join(AssetHat::ASSETS_DIR, src), target)
           end
 
           if asset_host.present?
