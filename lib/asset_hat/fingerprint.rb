@@ -1,3 +1,5 @@
+require 'digest/sha1'
+
 module AssetHat
   # Methods for determining the alphanumeric fingerprint of a code snippet.
   # This fingerprint changes along with the code, but doesn't necessarily
@@ -12,7 +14,7 @@ module AssetHat
     # Accepts an arbitrary string (e.g., of raw CSS/JS), and returns the
     # alphanumeric fingerprint for that string.
     def self.for_string(string)
-      Digest::MD5.hexdigest(string)
+      Digest::SHA1.hexdigest(string)[0..6]
     end
 
     # Accepts the path to a file in the local filesystem, and returns the
