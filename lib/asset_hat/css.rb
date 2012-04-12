@@ -47,7 +47,7 @@ module AssetHat
     # cache busting: If the user's browser has cached a copy of foo.png from a
     # previous deployment, this new URL forces the browser to ignore that
     # cache and request the latest version.
-    def self.add_asset_commit_ids(css)
+    def self.add_asset_fingerprints(css)
       update_css_urls(css, %w[images htc]) do |src, quote|
         # Get absolute path
         filepath = File.join(ASSETS_DIR, src)
@@ -55,9 +55,9 @@ module AssetHat
         # Convert to relative path
         filepath.sub!(/^#{FileUtils.pwd}#{File::SEPARATOR}/, '')
 
-        commit_id = AssetHat.last_commit_id(filepath)
+        fingerprint = AssetHat::Fingerprint.for_filepath(filepath)
 
-        filepath = AssetHat.versioned_filepath(src, commit_id).sub(/^(\/[^\/]+)/) { $1 + '/bundles' }
+        filepath = AssetHat.versioned_filepath(src, fingerprint).sub(/^(\/[^\/]+)/) { $1 + '/bundles' }
         yield(src, filepath) if block_given?
 
         "url(#{quote}#{filepath}#{quote})"
