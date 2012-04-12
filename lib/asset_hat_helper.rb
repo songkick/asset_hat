@@ -22,7 +22,6 @@ module AssetHatHelper
     options   = args.extract_options!.symbolize_keys
     filenames = [] # May or may not have proper extensions
     sources   = [] # The URLs that are ultimately included via HTML
-    source_commit_ids = {} # Last commit ID for each source
 
     # If `use_caching` is `true`, bundles and minified code will be used:
     use_caching = AssetHat.cache?
@@ -52,13 +51,6 @@ module AssetHatHelper
       if filename.match(/\.#{type}$/)
         sources << filename
       else
-        min_filename_with_ext = "#{filename}.min.#{type}"
-        # if use_caching
-        #   fingerprint = AssetHat::Fingerprint.for_filepath(filename)
-        #   min_filename_with_ext = "#{filename}-#{fingerprint}.min.#{type}"
-        # else
-        #   min_filename_with_ext = "#{filename}.min.#{type}"
-        # end
         if use_caching && AssetHat.asset_exists?(min_filename_with_ext, type)
           sources << min_filename_with_ext  # Use minified version
         else
@@ -89,11 +81,7 @@ module AssetHatHelper
             File.join(AssetHat.assets_dir(type), src))
         end
 
-        if fingerprint.present?
-          src.sub!(/\.min\.#{type}$/, "-#{fingerprint}.min.#{type}")
-        end
-
-        src
+        AssetHat.versioned_filepath(src, fingerprint)
       end
     end
 

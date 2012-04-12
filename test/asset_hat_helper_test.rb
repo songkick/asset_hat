@@ -9,17 +9,17 @@ class AssetHatHelperTest < ActionView::TestCase
     context 'with caching enabled' do
       context 'with minified versions' do
         setup do
-          @commit_id = '111'
-          flexmock(AssetHat).should_receive(:last_commit_id => @commit_id).
+          @fingerprint = '111'
+          flexmock(AssetHat::Fingerprint).should_receive(:for_bundle => @fingerprint).
             by_default
         end
 
         should 'include one file by name, and ' +
                'automatically use minified version' do
           flexmock(AssetHat, :asset_exists? => true)
-          expected_html = css_tag("foo.min.#{@commit_id}.css")
+          expected_html = css_tag("foo.min.#{@fingerprint}.css")
           expected_path =
-            AssetHat.assets_path(:css) + "/foo.min.#{@commit_id}.css"
+            AssetHat.assets_path(:css) + "/foo.min.#{@fingerprint}.css"
 
           assert_equal expected_html, include_css('foo', :cache => true)
           assert_equal expected_path, include_css('foo', :cache => true,
@@ -27,9 +27,9 @@ class AssetHatHelperTest < ActionView::TestCase
         end
 
         should 'include one unminified file by name and extension' do
-          expected_html = css_tag("foo.#{@commit_id}.css")
+          expected_html = css_tag("foo.#{@fingerprint}.css")
           expected_path =
-            AssetHat.assets_path(:css) + "/foo.#{@commit_id}.css"
+            AssetHat.assets_path(:css) + "/foo.#{@fingerprint}.css"
 
           assert_equal expected_html, include_css('foo.css', :cache => true)
           assert_equal expected_path, include_css('foo.css', :cache => true,
@@ -37,9 +37,9 @@ class AssetHatHelperTest < ActionView::TestCase
         end
 
         should 'include one minified file by name and extension' do
-          expected_html = css_tag("foo.min.#{@commit_id}.css")
+          expected_html = css_tag("foo.min.#{@fingerprint}.css")
           expected_path =
-            AssetHat.assets_path(:css) + "/foo.min.#{@commit_id}.css"
+            AssetHat.assets_path(:css) + "/foo.min.#{@fingerprint}.css"
 
           assert_equal expected_html,
             include_css('foo.min.css', :cache => true)
@@ -52,10 +52,10 @@ class AssetHatHelperTest < ActionView::TestCase
 
           sources = %w[foo bar]
           expected_html = sources.map do |source|
-            css_tag("#{source}.min.#{@commit_id}.css")
+            css_tag("#{source}.min.#{@fingerprint}.css")
           end.join("\n")
           expected_paths = sources.map do |source|
-            AssetHat.assets_path(:css) + "/#{source}.min.#{@commit_id}.css"
+            AssetHat.assets_path(:css) + "/#{source}.min.#{@fingerprint}.css"
           end
 
           assert_equal expected_html,
@@ -66,9 +66,9 @@ class AssetHatHelperTest < ActionView::TestCase
 
         should 'include multiple files as a bundle' do
           bundle = 'css-bundle-1'
-          expected_html = css_tag("bundles/#{bundle}.min.#{@commit_id}.css")
+          expected_html = css_tag("bundles/#{bundle}.min.#{@fingerprint}.css")
           expected_path =
-            AssetHat.bundles_path(:css) + "/#{bundle}.min.#{@commit_id}.css"
+            AssetHat.bundles_path(:css) + "/#{bundle}.min.#{@fingerprint}.css"
 
           assert_equal expected_html,
             include_css(:bundle => bundle, :cache => true)
@@ -91,9 +91,9 @@ class AssetHatHelperTest < ActionView::TestCase
             flexmock(AssetHat, :ssl_asset_host_differs? => true)
             bundle = 'css-bundle-1'
             expected_html =
-              css_tag("bundles/ssl/#{bundle}.min.#{@commit_id}.css")
+              css_tag("bundles/ssl/#{bundle}.min.#{@fingerprint}.css")
             expected_path = AssetHat.bundles_path(:css, :ssl => true) +
-              "/#{bundle}.min.#{@commit_id}.css"
+              "/#{bundle}.min.#{@fingerprint}.css"
 
             assert_equal expected_html,
               include_css(:bundle => bundle, :cache => true)
@@ -105,9 +105,9 @@ class AssetHatHelperTest < ActionView::TestCase
           should 'use non-SSL CSS if SSL/non-SSL asset hosts are the same' do
             flexmock(AssetHat, :ssl_asset_host_differs? => false)
             bundle = 'css-bundle-1'
-            expected_html = css_tag("bundles/#{bundle}.min.#{@commit_id}.css")
+            expected_html = css_tag("bundles/#{bundle}.min.#{@fingerprint}.css")
             expected_path = AssetHat.bundles_path(:css) +
-              "/#{bundle}.min.#{@commit_id}.css"
+              "/#{bundle}.min.#{@fingerprint}.css"
 
             assert_equal expected_html,
               include_css(:bundle => bundle, :cache => true)
@@ -253,33 +253,34 @@ class AssetHatHelperTest < ActionView::TestCase
     context 'with caching enabled' do
       context 'with minified versions' do
         setup do
-          @commit_id = '111'
-          flexmock(AssetHat).should_receive(
-            :last_commit_id        => @commit_id,
-            :last_bundle_commit_id => @commit_id
+          @fingerprint = '111'
+          flexmock(AssetHat::Fingerprint).should_receive(
+            :for_filepath => @fingerprint,
+            :for_bundle   => @fingerprint
           ).by_default
         end
 
         should 'include one file by name, and ' +
                'automatically use minified version' do
+          filename = 'jquery.some-plugin'
           flexmock(AssetHat, :asset_exists? => true)
-          expected_html = js_tag("jquery.some-plugin.min.#{@commit_id}.js")
+          expected_html = js_tag("#{filename}.min.#{@fingerprint}.js")
           expected_path = AssetHat.assets_path(:js) +
-            "/jquery.some-plugin.min.#{@commit_id}.js"
+            "/#{filename}.min.#{@fingerprint}.js"
 
           assert_equal expected_html,
-            include_js('jquery.some-plugin', :cache => true)
+            include_js(filename, :cache => true)
           assert_equal expected_path,
-            include_js('jquery.some-plugin', :cache => true,
+            include_js(filename, :cache => true,
               :only_url => true)
         end
 
         should 'include one unminified file by name and extension' do
           filename = 'jquery.some-plugin'
           ext      = '.js'
-          expected_html = js_tag("#{filename}.#{@commit_id}#{ext}")
+          expected_html = js_tag("#{filename}.#{@fingerprint}#{ext}")
           expected_path =
-            AssetHat.assets_path(:js) + "/#{filename}.#{@commit_id}#{ext}"
+            AssetHat.assets_path(:js) + "/#{filename}.#{@fingerprint}#{ext}"
 
           assert_equal expected_html, include_js(filename, :cache => true)
           assert_equal expected_path, include_js(filename, :cache => true,
@@ -287,11 +288,10 @@ class AssetHatHelperTest < ActionView::TestCase
         end
 
         should 'include one minified file by name and extension' do
-          filename = 'jquery.some-plugin.min'
           ext      = '.js'
-          expected_html = js_tag("#{filename}.#{@commit_id}#{ext}")
+          expected_html = js_tag("#{filename}.#{@fingerprint}#{ext}")
           expected_path =
-            AssetHat.assets_path(:js) + "/#{filename}.#{@commit_id}#{ext}"
+            AssetHat.assets_path(:js) + "/#{filename}.#{@fingerprint}#{ext}"
 
           assert_equal expected_html, include_js(filename, :cache => true)
           assert_equal expected_path, include_js(filename, :cache => true,
@@ -314,9 +314,9 @@ class AssetHatHelperTest < ActionView::TestCase
               flexmock(AssetHat).should_receive(:asset_exists?).
                 with(vendor_filename + vendor_ext, :js).and_return(true)
 
-              expected_html = js_tag("#{vendor_filename}.#{@commit_id}#{vendor_ext}")
+              expected_html = js_tag("#{vendor_filename}.#{@fingerprint}#{vendor_ext}")
               expected_path = AssetHat.assets_path(:js) +
-                                "/#{vendor_filename}.#{@commit_id}#{vendor_ext}"
+                                "/#{vendor_filename}.#{@fingerprint}#{vendor_ext}"
 
               assert_equal expected_html, include_js(vendor, :cache => true)
               assert_equal expected_path, include_js(vendor, :cache => true,
@@ -332,10 +332,10 @@ class AssetHatHelperTest < ActionView::TestCase
               flexmock(AssetHat).should_receive(:asset_exists?).
                 with(vendor_filename + vendor_ext, :js).and_return(true)
 
-              expected_html = js_tag("#{vendor_filename}.#{@commit_id}#{vendor_ext}")
+              expected_html = js_tag("#{vendor_filename}.#{@fingerprint}#{vendor_ext}")
                 # N.B.: Including only the regular, not minified, version
               expected_path = AssetHat.assets_path(:js) +
-                                "/#{vendor_filename}.#{@commit_id}#{vendor_ext}"
+                                "/#{vendor_filename}.#{@fingerprint}#{vendor_ext}"
 
               assert_equal expected_html, include_js(vendor, :cache => true)
               assert_equal expected_path, include_js(vendor, :cache => true,
@@ -345,7 +345,7 @@ class AssetHatHelperTest < ActionView::TestCase
 
           should 'not use a remote URL fallback if version is unknown' do
             output = include_js(:jquery, :cache => true)
-            assert_equal js_tag("jquery.min.#{@commit_id}.js"), output
+            assert_equal js_tag("jquery.min.#{@fingerprint}.js"), output
           end
 
           context 'with remote requests via SSL' do
@@ -468,9 +468,9 @@ class AssetHatHelperTest < ActionView::TestCase
             flexmock(AssetHat).should_receive(:asset_exists?).
               with(vendor_filename + vendor_ext, :js).and_return(true)
 
-            expected_html = js_tag("#{vendor_filename}.#{@commit_id}#{vendor_ext}")
+            expected_html = js_tag("#{vendor_filename}.#{@fingerprint}#{vendor_ext}")
             expected_path =
-              AssetHat.assets_path(:js) + "/#{vendor_filename}.#{@commit_id}#{vendor_ext}"
+              AssetHat.assets_path(:js) + "/#{vendor_filename}.#{@fingerprint}#{vendor_ext}"
 
             assert_equal expected_html, include_js(:jquery, :cache => true)
             assert_equal expected_path, include_js(:jquery, :cache => true,
@@ -486,7 +486,7 @@ class AssetHatHelperTest < ActionView::TestCase
               with(vendor_filename + vendor_ext, :js).and_return(true)
 
             assert_equal(
-              js_tag("#{vendor_filename}.#{@commit_id}#{vendor_ext}"),
+              js_tag("#{vendor_filename}.#{@fingerprint}#{vendor_ext}"),
               include_js(:jquery, :version => custom_version, :cache => true))
           end
 
@@ -634,10 +634,10 @@ class AssetHatHelperTest < ActionView::TestCase
           flexmock(AssetHat, :asset_exists? => true)
           sources = %w[foo jquery.plugin]
           expected_html = sources.map do |source|
-            js_tag("#{source}.min.#{@commit_id}.js")
+            js_tag("#{source}.min.#{@fingerprint}.js")
           end.join("\n")
           expected_paths = sources.map do |source|
-            AssetHat.assets_path(:js) + "/#{source}.min.#{@commit_id}.js"
+            AssetHat.assets_path(:js) + "/#{source}.min.#{@fingerprint}.js"
           end
 
           assert_equal expected_html,
@@ -651,9 +651,9 @@ class AssetHatHelperTest < ActionView::TestCase
           bundle   = 'js-bundle-1'
           filename = "#{bundle}.min"
           ext      = ".js"
-          expected_html = js_tag("bundles/#{filename}.#{@commit_id}#{ext}")
+          expected_html = js_tag("bundles/#{filename}.#{@fingerprint}#{ext}")
           expected_path =
-            AssetHat.bundles_path(:js) + "/#{filename}.#{@commit_id}#{ext}"
+            AssetHat.bundles_path(:js) + "/#{filename}.#{@fingerprint}#{ext}"
 
           assert_equal expected_html,
             include_js(:bundle => bundle, :cache => true)
@@ -665,10 +665,10 @@ class AssetHatHelperTest < ActionView::TestCase
           flexmock(AssetHat, :asset_exists? => true)
           bundles = %w[foo bar]
           expected_html = bundles.map do |bundle|
-            js_tag("bundles/#{bundle}.min.#{@commit_id}.js")
+            js_tag("bundles/#{bundle}.min.#{@fingerprint}.js")
           end.join("\n")
           expected_paths = bundles.map do |bundle|
-            AssetHat.bundles_path(:js) + "/#{bundle}.min.#{@commit_id}.js"
+            AssetHat.bundles_path(:js) + "/#{bundle}.min.#{@fingerprint}.js"
           end
 
           assert_equal expected_html,
@@ -691,9 +691,9 @@ class AssetHatHelperTest < ActionView::TestCase
           should 'use non-SSL JS if SSL/non-SSL asset hosts differ' do
             flexmock(AssetHat, :ssl_asset_host_differs? => true)
             bundle = 'js-bundle-1'
-            expected_html = js_tag("bundles/#{bundle}.min.#{@commit_id}.js")
+            expected_html = js_tag("bundles/#{bundle}.min.#{@fingerprint}.js")
             expected_path =
-              AssetHat.bundles_path(:js) + "/#{bundle}.min.#{@commit_id}.js"
+              AssetHat.bundles_path(:js) + "/#{bundle}.min.#{@fingerprint}.js"
 
             assert_equal expected_html,
               include_js(:bundle => bundle, :cache => true)
@@ -704,9 +704,9 @@ class AssetHatHelperTest < ActionView::TestCase
           should 'use non-SSL JS if SSL/non-SSL asset hosts are the same' do
             flexmock(AssetHat, :ssl_asset_host_differs? => false)
             bundle = 'js-bundle-1'
-            expected_html = js_tag("bundles/#{bundle}.min.#{@commit_id}.js")
+            expected_html = js_tag("bundles/#{bundle}.min.#{@fingerprint}.js")
             expected_path =
-              AssetHat.bundles_path(:js) + "/#{bundle}.min.#{@commit_id}.js"
+              AssetHat.bundles_path(:js) + "/#{bundle}.min.#{@fingerprint}.js"
 
             assert_equal expected_html,
               include_js(:bundle => bundle, :cache => true)
@@ -719,7 +719,7 @@ class AssetHatHelperTest < ActionView::TestCase
       context 'without minified versions' do
         should 'include one file by name, and ' +
                'automatically use original version' do
-          source = 'jquery.some-plugin'
+          source = 'js-file-1-1'
           expected_html = js_tag("#{source}.js")
           expected_path = AssetHat.assets_path(:js) + "/#{source}.js"
 
@@ -886,8 +886,10 @@ class AssetHatHelperTest < ActionView::TestCase
 
           @asset_id = ENV['RAILS_ASSET_ID'] = ''
           flexmock(AssetHat).should_receive(
-            :asset_exists?  => false,
-            :last_commit_id => ''
+            :asset_exists?  => false
+          ).by_default
+          flexmock(AssetHat::Fingerprint).should_receive(
+            :for_filepath => ''
           ).by_default
 
           @jquery_version = @config['js']['vendors']['jquery']['version']

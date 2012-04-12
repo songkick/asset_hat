@@ -128,31 +128,24 @@ class AssetHatTest < ActiveSupport::TestCase
                     AssetHat::CSS.min_filepath('foo/bar/baz.css')
     end
 
-    should 'return path to minified file with MD5 fingerprint' do
-      fingerprint = 'a1b2c3'
-      assert_equal  "foo/bar/baz-#{fingerprint}.min.css",
-                    AssetHat::CSS.min_filepath('foo/bar/baz.css',
-                      :fingerprint => fingerprint)
-    end
-
     should 'add image asset commit IDs' do
-      commit_id = 111
-      flexmock(AssetHat, :last_commit_id => commit_id)
+      fingerprint = 111
+      flexmock(AssetHat::Fingerprint, :for_filepath => fingerprint)
       flexmock(Rails, :public_path => '')
 
       # No/single/double quotes:
       ['', "'", '"'].each do |quote|
         img = '/images/foo.png'
         assert_equal(
-          "p{background:url(#{quote}/images/bundles/foo.#{commit_id}.png#{quote})}",
-          AssetHat::CSS.add_asset_commit_ids(
+          "p{background:url(#{quote}/images/bundles/foo.#{fingerprint}.png#{quote})}",
+          AssetHat::CSS.add_asset_fingerprints(
             "p{background:url(#{quote}#{img}#{quote})}")
         )
 
         img = '/images/?id=foo.png'
         assert_equal(
-          "p{background:url(#{quote}/images/bundles/?id=foo.#{commit_id}.png#{quote})}",
-          AssetHat::CSS.add_asset_commit_ids(
+          "p{background:url(#{quote}/images/bundles/?id=foo.#{fingerprint}.png#{quote})}",
+          AssetHat::CSS.add_asset_fingerprints(
             "p{background:url(#{quote}#{img}#{quote})}")
         )
       end
@@ -173,20 +166,20 @@ class AssetHatTest < ActiveSupport::TestCase
         "/images/?id=foo.png'
       ].each do |bad_url|
         assert_equal "p{background:url(#{bad_url})}",
-          AssetHat::CSS.add_asset_commit_ids("p{background:url(#{bad_url})}")
+          AssetHat::CSS.add_asset_fingerprints("p{background:url(#{bad_url})}")
       end
     end
 
     should 'add .htc asset commit IDs' do
-      commit_id = 111
-      flexmock(AssetHat, :last_commit_id => commit_id)
+      fingerprint = 111
+      flexmock(AssetHat::Fingerprint, :for_filepath => fingerprint)
       flexmock(Rails, :public_path => '')
 
-      assert_equal  "p{background:url(/htc/bundles/iepngfix.#{commit_id}.htc)}",
-                    AssetHat::CSS.add_asset_commit_ids(
+      assert_equal  "p{background:url(/htc/bundles/iepngfix.#{fingerprint}.htc)}",
+                    AssetHat::CSS.add_asset_fingerprints(
                       "p{background:url(/htc/iepngfix.htc)}")
-      assert_equal  "p{background:url(/htc/bundles/?id=iepngfix.#{commit_id})}",
-                    AssetHat::CSS.add_asset_commit_ids(
+      assert_equal  "p{background:url(/htc/bundles/?id=iepngfix.#{fingerprint})}",
+                    AssetHat::CSS.add_asset_fingerprints(
                       "p{background:url(/htc/?id=iepngfix)}")
     end
 
@@ -257,13 +250,6 @@ class AssetHatTest < ActiveSupport::TestCase
                     AssetHat::JS.min_filepath('foo/bar/baz.js')
     end
 
-    should 'return path to minified file with MD5 fingerprint' do
-      fingerprint = 'a1b2c3'
-      assert_equal  "foo/bar/baz-#{fingerprint}.min.js",
-                    AssetHat::JS.min_filepath('foo/bar/baz.js',
-                      :fingerprint => fingerprint)
-    end
-
     context 'with minifying' do
       should 'minify if a string ends with a comment and no line break' do
         input = 'foo(); // bar'
@@ -271,38 +257,6 @@ class AssetHatTest < ActiveSupport::TestCase
       end
     end # context 'with minifying'
   end # context 'AssetHat::JS'
-
-  context 'AssetHat::Fingerprint' do
-    should 'return the fingerprint for a string' do
-      assert_match /[a-f0-9]{32}/,
-        AssetHat::Fingerprint.for_string('application')
-    end
-
-    should 'return the fingerprint for a file' do
-      assert_match /[a-f0-9]{32}/,
-        AssetHat::Fingerprint.for_filepath(File.join(
-          'public', 'stylesheets', 'css-file-1-1.css'
-        ))
-    end
-
-    should 'return the fingerprint for a bundle' do
-      AssetHat::TYPES.each do |type|
-        bundle_name = AssetHat.config[type.to_s]['bundles'].keys.first
-        assert bundle_name.present?, %{
-          Precondition: The #{type.to_s.upcase} bundle
-          `#{bundle_name}` should exist.
-        }.squish!
-
-        assert_match /[a-f0-9]{32}/,
-          AssetHat::Fingerprint.for_bundle(bundle_name, type.to_sym)
-
-        flexmock(AssetHat::Fingerprint).should_receive(:for_string).never
-        assert AssetHat::Fingerprint.for_bundle(bundle_name, type.to_sym),
-          'Should memoize fingerprint from previous call'
-        flexmock_teardown
-      end
-    end
-  end # context 'AssetHat::Fingerprint'
 
 end
 

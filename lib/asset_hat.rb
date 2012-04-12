@@ -1,4 +1,4 @@
-%w[css js fingerprint vcs].each do |filename|
+%w[css js fingerprint].each do |filename|
   require File.join(File.dirname(__FILE__), 'asset_hat', filename)
 end
 
@@ -205,10 +205,9 @@ module AssetHat
   #               to include it in the returned file path
   #               (e.g., <code>path/to/application-a1b2c3.min.css</code>).
   def self.min_filepath(filepath, extension, options={})
-    # filepath.sub(/([^\.]*).#{extension}$/, "\\1.min.#{extension}")
     filepath.sub(/([^\.]*).#{extension}$/) do |match|
-      filename = [$1, options[:fingerprint]].select(&:present?).join('-')
-      "#{filename}.min.#{extension}"
+      filename = [$1, 'min', options[:fingerprint]].select(&:present?).join('.')
+      "#{filename}.#{extension}"
     end
   end
 
@@ -252,16 +251,16 @@ module AssetHat
     end
   end
 
-  def self.versioned_filepath(filepath, commit_id)
-    return filepath unless commit_id.present?
+  def self.versioned_filepath(filepath, fingerprint)
+    return filepath unless fingerprint.present?
     dirname = File.dirname(filepath)
 
     versioned_filename = File.basename(filepath).
-                         sub(/(\.\w+)?$/) { ".#{commit_id}#{$1}" }
+                           sub(/(\.\w+)?$/) { ".#{fingerprint}#{$1}" }
 
     case dirname
       when '.' then versioned_filename
-      else          File.join(dirname, versioned_filename)
+      else File.join(dirname, versioned_filename)
     end
   end
 
