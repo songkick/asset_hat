@@ -1,6 +1,19 @@
 namespace :asset_hat do
   namespace :js do
 
+    desc 'Deletes existing JS bundle files'
+    task :clean do
+      dir = AssetHat.bundles_dir(:js)
+      verbose = (ENV['VERBOSE'] == 'true') # Defaults to `false`
+
+      if Dir.exists?(dir)
+        FileUtils.rm_r(dir)
+        puts "Deleted #{dir}."
+      elsif verbose
+        puts "#{dir} has already been cleaned out."
+      end
+    end
+
     desc 'Minifies one JS file'
     task :minify_file, [:filepath] => :environment do |t, args|
       type = 'js'
@@ -32,9 +45,10 @@ namespace :asset_hat do
 
     desc 'Minifies one JS bundle'
     task :minify_bundle, [:bundle] => :environment do |t, args|
-      type = 'js'
+      bundle = args.bundle
+      type   = 'js'
 
-      if args.bundle.blank?
+      if bundle.blank?
         raise "Usage: rake asset_hat:#{type}:" +
           "minify_bundle[application]" and return
       end
@@ -46,11 +60,14 @@ namespace :asset_hat do
         :engine => config['engine']
       }.reject { |k,v| v.blank? }
 
+      # Compute bundle fingerprint
+      fingerprint = AssetHat::Fingerprint.for_bundle(bundle, type)
+
       # Get bundle filenames
-      filenames = config['bundles'][args.bundle].select(&:present?)
+      filenames = config['bundles'][bundle].select(&:present?)
       if filenames.empty?
         raise "No #{type.upcase} files are specified for the " +
-          "#{args.bundle} bundle in #{AssetHat::CONFIG_FILEPATH}." and return
+          "#{bundle} bundle in #{AssetHat::CONFIG_FILEPATH}." and return
       end
       filepaths = filenames.map do |filename|
         parts = filename.split(File::SEPARATOR)
@@ -62,8 +79,10 @@ namespace :asset_hat do
           parts
         )
       end
-      bundle_filepath = AssetHat::JS.min_filepath(File.join(
-        AssetHat.bundles_dir(type), "#{args.bundle}.#{type}"))
+      bundle_filepath = AssetHat::JS.min_filepath(
+        File.join(AssetHat.bundles_dir(type), "#{bundle}.#{type}"),
+        :fingerprint => fingerprint
+      )
 
       commit_id = AssetHat.last_bundle_commit_id(args.bundle, type)
       bundle_filepath = AssetHat.versioned_filepath(bundle_filepath, commit_id)
@@ -129,6 +148,11 @@ namespace :asset_hat do
           "in #{AssetHat::CONFIG_FILEPATH}." and return
       end
       bundles = config['bundles'].keys
+
+      # Clean out older bundles
+      puts
+      task = Rake::Task["asset_hat:#{type}:clean"]
+      task.reenable; task.invoke
 
       # Minify bundles
       bundles.each do |bundle|
