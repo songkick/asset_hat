@@ -58,7 +58,20 @@ module AssetHat
     # Your web server process(es) should run this at boot to avoid overhead
     # during user runtime.
     def self.cache_fingerprints
-      # FIXME: Implement; see `cache_last_commit_ids`
+      AssetHat::TYPES.each do |type|
+        next if AssetHat.config[type.to_s].blank? ||
+                AssetHat.config[type.to_s]['bundles'].blank?
+
+        AssetHat.config[type.to_s]['bundles'].keys.each do |bundle|
+          # Memoize fingerprint for this bundle
+          AssetHat::Fingerprint.for_bundle(bundle, type) if AssetHat.cache?
+
+          # Memoize fingerprints for each file in this bundle
+          AssetHat.bundle_filepaths(bundle, type).each do |filepath|
+            AssetHat::Fingerprint.for_filepath(filepath)
+          end
+        end
+      end
     end
 
   end

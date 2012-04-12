@@ -8,8 +8,8 @@ module AssetHat
       require 'asset_hat/initializers/action_view'
     end
 
-    initializer 'asset_hat.cache_last_commit_ids' do |app|
-      require 'asset_hat/initializers/cache_last_commit_ids'
+    initializer 'asset_hat.cache_fingerprints' do |app|
+      require 'asset_hat/initializers/cache_fingerprints'
     end
 
     rake_tasks do
