@@ -288,6 +288,7 @@ class AssetHatHelperTest < ActionView::TestCase
         end
 
         should 'include one minified file by name and extension' do
+          filename = 'jquery.some-plugin.min'
           ext      = '.js'
           expected_html = js_tag("#{filename}.#{@fingerprint}#{ext}")
           expected_path =
@@ -719,7 +720,7 @@ class AssetHatHelperTest < ActionView::TestCase
       context 'without minified versions' do
         should 'include one file by name, and ' +
                'automatically use original version' do
-          source = 'js-file-1-1'
+          source = 'jquery.some-plugin'
           expected_html = js_tag("#{source}.js")
           expected_path = AssetHat.assets_path(:js) + "/#{source}.js"
 
@@ -957,7 +958,9 @@ class AssetHatHelperTest < ActionView::TestCase
 
         context 'with remote requests' do
           setup do
+            @fingerprint = 111
             flexmock(AssetHat, :consider_all_requests_local? => false)
+            flexmock(AssetHat::Fingerprint, :for_bundle => @fingerprint)
           end
 
           should 'render with caching enabled and remote vendors' do
@@ -973,9 +976,9 @@ class AssetHatHelperTest < ActionView::TestCase
             expected << "  script('#{jquery_url}').wait().\n"
             expected << "  script('/javascripts/foo.js').wait().\n"
             expected << "  script('/javascripts/" +
-                            "bundles/js-bundle-1.min.js').wait().\n"
+                            "bundles/js-bundle-1.min.#{@fingerprint}.js').wait().\n"
             expected << "  script('/javascripts/" +
-                            "bundles/js-bundle-2.min.js').wait();\n"
+                            "bundles/js-bundle-2.min.#{@fingerprint}.js').wait();\n"
             expected << '</script>'
 
             assert_equal expected, include_js(:jquery, 'foo',
@@ -1000,8 +1003,6 @@ class AssetHatHelperTest < ActionView::TestCase
     assert_equal '/javascripts/bundles/foo.min.js',
       asset_path(:js, 'bundles/foo.min.js')
   end
-
-
 
   private
 

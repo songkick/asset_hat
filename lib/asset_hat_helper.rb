@@ -51,6 +51,7 @@ module AssetHatHelper
       if filename.match(/\.#{type}$/)
         sources << filename
       else
+        min_filename_with_ext = "#{filename}.min.#{type}"
         if use_caching && AssetHat.asset_exists?(min_filename_with_ext, type)
           sources << min_filename_with_ext  # Use minified version
         else
@@ -80,7 +81,6 @@ module AssetHatHelper
           fingerprint = AssetHat::Fingerprint.for_filepath(
             File.join(AssetHat.assets_dir(type), src))
         end
-
         AssetHat.versioned_filepath(src, fingerprint)
       end
     end
