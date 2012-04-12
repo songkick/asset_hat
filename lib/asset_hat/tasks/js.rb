@@ -84,9 +84,6 @@ namespace :asset_hat do
         :fingerprint => fingerprint
       )
 
-      commit_id = AssetHat.last_bundle_commit_id(args.bundle, type)
-      bundle_filepath = AssetHat.versioned_filepath(bundle_filepath, commit_id)
-
       # Concatenate and process output
       output = ''
       old_bundle_size = 0.0

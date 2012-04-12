@@ -1,21 +1,21 @@
 namespace :asset_hat do
   namespace :css do
 
-    desc 'Adds commit IDs to asset URLs in CSS for cache busting'
-    task :add_asset_commit_ids, [:filename] => :environment do |t, args|
+    desc 'Adds fingerprints to asset URLs in CSS for cache busting'
+    task :add_asset_fingerprints, [:filename] => :environment do |t, args|
       if args.filename.blank?
         raise 'Usage: rake asset_hat:css:' +
-          'add_asset_commit_ids[filename.css]' and return
+          'add_asset_fingerprints[filename.css]' and return
       end
 
       verbose = (ENV['VERBOSE'] != 'false') # Defaults to `true`
 
       css = File.open(args.filename, 'r') { |f| f.read }
-      css = AssetHat::CSS.add_asset_commit_ids(css)
+      css = AssetHat::CSS.add_asset_fingerprints(css)
 
       AssetHat.safe_write_file(args.filename, css)
 
-      puts "- Added asset commit IDs to #{args.filename}" if verbose
+      puts "- Added asset fingerprints to #{args.filename}" if verbose
     end
 
     desc 'Adds hosts to asset URLs in CSS'
@@ -143,7 +143,7 @@ namespace :asset_hat do
 
           file_output = AssetHat::CSS.minify(file_output, min_options)
 
-          file_output = AssetHat::CSS.add_asset_commit_ids(file_output) do |src, versioned_path|
+          file_output = AssetHat::CSS.add_asset_fingerprints(file_output) do |src, versioned_path|
             target = File.join(AssetHat::ASSETS_DIR, versioned_path)
             FileUtils.makedirs(File.dirname(target))
             FileUtils.cp(File.join(AssetHat::ASSETS_DIR, src), target)
