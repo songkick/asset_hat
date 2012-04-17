@@ -20,9 +20,17 @@ module AssetHat
     # Accepts the path to a file in the local filesystem, and returns the
     # alphanumeric fingerprint for the contents of that file.
     def self.for_filepath(filepath)
+      # Return memoized fingerprint, if any
+      @fingerprints ||= {}
+      @fingerprints[:filepath] ||= {}
+      fingerprint = @fingerprints[:filepath][filepath]
+
+      return fingerprint if fingerprint.present?
       return '' unless File.file?(filepath)
+
       code = File.read(filepath)
-      Fingerprint.for_string(code)
+      # memoize fingerprint for filepath
+      @fingerprints[:filepath][filepath] = Fingerprint.for_string(code)
     end
 
     # Accepts the name and type (<code>:css</code> or <code>:js</code>) of a
@@ -49,12 +57,9 @@ module AssetHat
       all_code = bundle_filepaths.inject('') do |code, filepath|
         code << File.read(filepath)
       end
-      fingerprint = Fingerprint.for_string(all_code)
 
       # Memoize result
-      @fingerprints[type][bundle] = fingerprint
-
-      fingerprint
+      @fingerprints[type][bundle] = Fingerprint.for_string(all_code)
     end
 
     # Precomputes and caches the alphanumeric fingerprints for all bundles.
@@ -67,7 +72,7 @@ module AssetHat
 
         AssetHat.config[type.to_s]['bundles'].keys.each do |bundle|
           # Memoize fingerprint for this bundle
-          AssetHat::Fingerprint.for_bundle(bundle, type) if AssetHat.cache?
+          AssetHat::Fingerprint.for_bundle(bundle, type)
 
           # Memoize fingerprints for each file in this bundle
           AssetHat.bundle_filepaths(bundle, type).each do |filepath|
