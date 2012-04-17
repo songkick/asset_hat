@@ -1,4 +1,7 @@
 require 'rubygems'
+require 'simplecov'
+SimpleCov.start
+
 require 'test/unit'
 require 'active_support'
 require 'action_controller'

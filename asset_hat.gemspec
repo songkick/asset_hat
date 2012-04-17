@@ -4,14 +4,14 @@
 # -*- encoding: utf-8 -*-
 
 Gem::Specification.new do |s|
-  s.name = %q{asset_hat}
+  s.name = "asset_hat"
   s.version = "0.4.2.5"
 
   s.required_rubygems_version = Gem::Requirement.new(">= 0") if s.respond_to? :required_rubygems_version=
   s.authors = ["Ron DeVera", "Mint Digital"]
-  s.date = %q{2012-04-11}
-  s.description = %q{Load CSS and JS faster. Minifies, bundles, and optimizes CSS/JS assets ahead of time (e.g., on deploy), not at runtime. Loads popular third-party JS (like jQuery, YUI, and Dojo) from localhost in development, and auto-switches to Google's CDN in production. Lets you switch on LABjs mode to load more scripts in parallel. Can rewrite stylesheets to use CDN hosts (not just your web server) and cache-busting hashes for updated images.}
-  s.email = %q{hello@rondevera.com}
+  s.date = "2012-04-17"
+  s.description = "Load CSS and JS faster. Minifies, bundles, and optimizes CSS/JS assets ahead of time (e.g., on deploy), not at runtime. Loads popular third-party JS (like jQuery, YUI, and Dojo) from localhost in development, and auto-switches to Google's CDN in production. Lets you switch on LABjs mode to load more scripts in parallel. Can rewrite stylesheets to use CDN hosts (not just your web server) and cache-busting hashes for updated images."
+  s.email = "hello@rondevera.com"
   s.extra_rdoc_files = [
     "LICENSE",
     "README.rdoc"
@@ -22,6 +22,7 @@ Gem::Specification.new do |s|
     "HISTORY",
     "LICENSE",
     "README.rdoc",
+    "RELEASE",
     "Rakefile",
     "VERSION.yml",
     "asset_hat.gemspec",
@@ -61,8 +62,9 @@ Gem::Specification.new do |s|
     "lib/asset_hat.rb",
     "lib/asset_hat/capistrano.rb",
     "lib/asset_hat/css.rb",
+    "lib/asset_hat/fingerprint.rb",
     "lib/asset_hat/initializers/action_view.rb",
-    "lib/asset_hat/initializers/cache_last_commit_ids.rb",
+    "lib/asset_hat/initializers/cache_fingerprints.rb",
     "lib/asset_hat/js.rb",
     "lib/asset_hat/js/vendors.rb",
     "lib/asset_hat/railtie.rb",
@@ -70,12 +72,11 @@ Gem::Specification.new do |s|
     "lib/asset_hat/tasks/css.rb",
     "lib/asset_hat/tasks/js.rb",
     "lib/asset_hat/unicorn.rb",
-    "lib/asset_hat/vcs.rb",
     "lib/asset_hat/version.rb",
     "lib/asset_hat_helper.rb",
     "lib/tasks/asset_hat.rake",
-    "public/javascripts/bundles/js-bundle-1.min.js",
-    "public/javascripts/bundles/js-bundle-2.min.js",
+    "public/javascripts/bundles/js-bundle-1.min.111.js",
+    "public/javascripts/bundles/js-bundle-2.min.111.js",
     "public/javascripts/js-file-1-1.js",
     "public/javascripts/js-file-1-2.js",
     "public/javascripts/js-file-1-3.js",
@@ -94,14 +95,15 @@ Gem::Specification.new do |s|
     "public/stylesheets/css-file-2-2.css",
     "public/stylesheets/css-file-2-3.css",
     "rails/init.rb",
+    "script/preview_github_readme",
     "test/asset_hat_helper_test.rb",
     "test/asset_hat_test.rb",
     "test/test_helper.rb"
   ]
-  s.homepage = %q{http://mintdigital.github.com/asset_hat}
+  s.homepage = "http://mintdigital.github.com/asset_hat"
   s.require_paths = ["lib"]
-  s.rubygems_version = %q{1.4.2}
-  s.summary = %q{Your assets are covered.}
+  s.rubygems_version = "1.8.21"
+  s.summary = "Your assets are covered."
 
   if s.respond_to? :specification_version then
     s.specification_version = 3
@@ -113,6 +115,13 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<shoulda>, ["~> 2.10.2"])
       s.add_development_dependency(%q<actionpack>, ["~> 3.0.0"])
       s.add_development_dependency(%q<test-unit>, ["~> 2.0.0"])
+      s.add_development_dependency(%q<actionpack>, ["~> 3.0.0"])
+      s.add_development_dependency(%q<flexmock>, ["~> 0.8.6"])
+      s.add_development_dependency(%q<hanna>, ["~> 0.1.12"])
+      s.add_development_dependency(%q<jeweler>, ["~> 1.6.0"])
+      s.add_development_dependency(%q<shoulda>, ["~> 2.10.2"])
+      s.add_development_dependency(%q<simplecov>, ["~> 0.6.1"])
+      s.add_development_dependency(%q<test-unit>, ["~> 2.0.0"])
       s.add_runtime_dependency(%q<cssmin>, ["~> 1.0.2"])
       s.add_runtime_dependency(%q<jsmin>, ["~> 1.0.1"])
     else
@@ -121,6 +130,13 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<jeweler>, ["~> 1.6.0"])
       s.add_dependency(%q<shoulda>, ["~> 2.10.2"])
       s.add_dependency(%q<actionpack>, ["~> 3.0.0"])
+      s.add_dependency(%q<test-unit>, ["~> 2.0.0"])
+      s.add_dependency(%q<actionpack>, ["~> 3.0.0"])
+      s.add_dependency(%q<flexmock>, ["~> 0.8.6"])
+      s.add_dependency(%q<hanna>, ["~> 0.1.12"])
+      s.add_dependency(%q<jeweler>, ["~> 1.6.0"])
+      s.add_dependency(%q<shoulda>, ["~> 2.10.2"])
+      s.add_dependency(%q<simplecov>, ["~> 0.6.1"])
       s.add_dependency(%q<test-unit>, ["~> 2.0.0"])
       s.add_dependency(%q<cssmin>, ["~> 1.0.2"])
       s.add_dependency(%q<jsmin>, ["~> 1.0.1"])
@@ -131,6 +147,13 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<jeweler>, ["~> 1.6.0"])
     s.add_dependency(%q<shoulda>, ["~> 2.10.2"])
     s.add_dependency(%q<actionpack>, ["~> 3.0.0"])
+    s.add_dependency(%q<test-unit>, ["~> 2.0.0"])
+    s.add_dependency(%q<actionpack>, ["~> 3.0.0"])
+    s.add_dependency(%q<flexmock>, ["~> 0.8.6"])
+    s.add_dependency(%q<hanna>, ["~> 0.1.12"])
+    s.add_dependency(%q<jeweler>, ["~> 1.6.0"])
+    s.add_dependency(%q<shoulda>, ["~> 2.10.2"])
+    s.add_dependency(%q<simplecov>, ["~> 0.6.1"])
     s.add_dependency(%q<test-unit>, ["~> 2.0.0"])
     s.add_dependency(%q<cssmin>, ["~> 1.0.2"])
     s.add_dependency(%q<jsmin>, ["~> 1.0.1"])

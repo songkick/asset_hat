@@ -2,3 +2,5 @@ _site/
 pkg/
 tmp/
 Gemfile.lock
+coverage
+
