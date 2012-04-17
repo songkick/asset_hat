@@ -32,7 +32,6 @@ Gem::Specification.new do |s|
     "doc/classes/AssetHat/CSS/Engines.html",
     "doc/classes/AssetHat/JS.html",
     "doc/classes/AssetHat/JS/Engines.html",
-    "doc/classes/AssetHat/JS/Vendors.html",
     "doc/classes/AssetHatHelper.html",
     "doc/created.rid",
     "doc/files/HISTORY.html",
@@ -41,15 +40,12 @@ Gem::Specification.new do |s|
     "doc/files/lib/asset_hat/capistrano_rb.html",
     "doc/files/lib/asset_hat/css_rb.html",
     "doc/files/lib/asset_hat/initializers/action_view_rb.html",
-    "doc/files/lib/asset_hat/initializers/cache_last_commit_ids_rb.html",
-    "doc/files/lib/asset_hat/js/vendors_rb.html",
     "doc/files/lib/asset_hat/js_rb.html",
     "doc/files/lib/asset_hat/railtie_rb.html",
     "doc/files/lib/asset_hat/tasks/css_rb.html",
     "doc/files/lib/asset_hat/tasks/js_rb.html",
     "doc/files/lib/asset_hat/tasks_rb.html",
     "doc/files/lib/asset_hat/unicorn_rb.html",
-    "doc/files/lib/asset_hat/vcs_rb.html",
     "doc/files/lib/asset_hat/version_rb.html",
     "doc/files/lib/asset_hat_helper_rb.html",
     "doc/files/lib/asset_hat_rb.html",
@@ -66,7 +62,6 @@ Gem::Specification.new do |s|
     "lib/asset_hat/initializers/action_view.rb",
     "lib/asset_hat/initializers/cache_fingerprints.rb",
     "lib/asset_hat/js.rb",
-    "lib/asset_hat/js/vendors.rb",
     "lib/asset_hat/railtie.rb",
     "lib/asset_hat/tasks.rb",
     "lib/asset_hat/tasks/css.rb",
@@ -122,6 +117,13 @@ Gem::Specification.new do |s|
       s.add_development_dependency(%q<shoulda>, ["~> 2.10.2"])
       s.add_development_dependency(%q<simplecov>, ["~> 0.6.1"])
       s.add_development_dependency(%q<test-unit>, ["~> 2.0.0"])
+      s.add_development_dependency(%q<actionpack>, ["~> 3.0.0"])
+      s.add_development_dependency(%q<flexmock>, ["~> 0.8.6"])
+      s.add_development_dependency(%q<hanna>, ["~> 0.1.12"])
+      s.add_development_dependency(%q<jeweler>, ["~> 1.6.0"])
+      s.add_development_dependency(%q<shoulda>, ["~> 2.10.2"])
+      s.add_development_dependency(%q<simplecov>, ["~> 0.6.1"])
+      s.add_development_dependency(%q<test-unit>, ["~> 2.0.0"])
       s.add_runtime_dependency(%q<cssmin>, ["~> 1.0.2"])
       s.add_runtime_dependency(%q<jsmin>, ["~> 1.0.1"])
     else
@@ -130,6 +132,13 @@ Gem::Specification.new do |s|
       s.add_dependency(%q<jeweler>, ["~> 1.6.0"])
       s.add_dependency(%q<shoulda>, ["~> 2.10.2"])
       s.add_dependency(%q<actionpack>, ["~> 3.0.0"])
+      s.add_dependency(%q<test-unit>, ["~> 2.0.0"])
+      s.add_dependency(%q<actionpack>, ["~> 3.0.0"])
+      s.add_dependency(%q<flexmock>, ["~> 0.8.6"])
+      s.add_dependency(%q<hanna>, ["~> 0.1.12"])
+      s.add_dependency(%q<jeweler>, ["~> 1.6.0"])
+      s.add_dependency(%q<shoulda>, ["~> 2.10.2"])
+      s.add_dependency(%q<simplecov>, ["~> 0.6.1"])
       s.add_dependency(%q<test-unit>, ["~> 2.0.0"])
       s.add_dependency(%q<actionpack>, ["~> 3.0.0"])
       s.add_dependency(%q<flexmock>, ["~> 0.8.6"])
@@ -147,6 +156,13 @@ Gem::Specification.new do |s|
     s.add_dependency(%q<jeweler>, ["~> 1.6.0"])
     s.add_dependency(%q<shoulda>, ["~> 2.10.2"])
     s.add_dependency(%q<actionpack>, ["~> 3.0.0"])
+    s.add_dependency(%q<test-unit>, ["~> 2.0.0"])
+    s.add_dependency(%q<actionpack>, ["~> 3.0.0"])
+    s.add_dependency(%q<flexmock>, ["~> 0.8.6"])
+    s.add_dependency(%q<hanna>, ["~> 0.1.12"])
+    s.add_dependency(%q<jeweler>, ["~> 1.6.0"])
+    s.add_dependency(%q<shoulda>, ["~> 2.10.2"])
+    s.add_dependency(%q<simplecov>, ["~> 0.6.1"])
     s.add_dependency(%q<test-unit>, ["~> 2.0.0"])
     s.add_dependency(%q<actionpack>, ["~> 3.0.0"])
     s.add_dependency(%q<flexmock>, ["~> 0.8.6"])

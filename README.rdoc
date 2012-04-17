@@ -162,37 +162,6 @@ Additional settings are supported in <code>config/assets.yml</code>:
   you can switch both the CSS and JS engines to <code>weak</code>. However,
   the <code>weak</code> engines don't save as many bytes.
 
-* <code>vendors</code>: Configures third-party JS that's loaded from a CDN or
-  other external source. The following example configures jQuery and jQuery UI
-  for use throughout the app:
-
-    js:
-      vendors:
-        jquery:
-          version:        1.5.2
-        jquery_ui:
-          version:        1.8.12
-          remote_url:     http://cdn.example.com/js/jquery-ui-1.8.12.min.js
-          remote_ssl_url: https://cdn-ssl.example.com/js/jquery-ui-1.8.12.min.js
-
-  Configuration keys per vendor:
-
-  * <code>version</code>: Sets the default version across the app. In the
-    example above, <code><%= include_js :jquery %></code> uses version 1.5.2
-    by default. You can override this for special layouts/views with
-    <code><%= include_js :jquery, :version => '1.3.2' %></code>.
-  * <code>remote_url</code>, <code>remote_ssl_url</code>: By default, vendor
-    JS will load from {Google's CDN}[http://code.google.com/apis/ajaxlibs/]
-    in production (or any environment where
-    <code>config.action_controller.consider_all_requests_local</code> is set
-    to <code>false</code>). If the original request to your app used SSL, the
-    vendor JS will also load from Google's CDN via SSL. If you prefer to use a
-    different CDN, specify its SSL/non-SSL URLs, and the appropriate URL will
-    be used per request.
-
-  A full list of supported vendors is in the
-  <code>AssetHat::JS::Vendors</code> module.
-
 === SSL configuration
 
 When you request a page via SSL, some browsers (euphemism for "IE") show

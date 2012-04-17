@@ -46,10 +46,10 @@
             <h2>Methods</h2>
             <h3>public class</h3>
             <ol>
-              <li><a href="#M000021">add_asset_commit_ids</a></li>
-              <li><a href="#M000022">add_asset_hosts</a></li>
-              <li><a href="#M000019">min_filepath</a></li>
-              <li><a href="#M000020">minify</a></li>
+              <li><a href="#M000020">add_asset_fingerprints</a></li>
+              <li><a href="#M000021">add_asset_hosts</a></li>
+              <li><a href="#M000018">min_filepath</a></li>
+              <li><a href="#M000019">minify</a></li>
             </ol>
           </div>
           <div id='section'>
@@ -76,11 +76,11 @@
             </div>
             <div id='methods'>
               <h2>Public class methods</h2>
-              <div class='method public-class' id='method-M000021'>
-                <a name='M000021'></a>
+              <div class='method public-class' id='method-M000020'>
+                <a name='M000020'></a>
                 <div class='synopsis'>
-                  <span class='name'>add_asset_commit_ids</span>
-                  <span class='arguments'>(css)</span>
+                  <span class='name'>add_asset_fingerprints</span>
+                  <span class='arguments'>(css) {|src, filepath| ...}</span>
                 </div>
                 <div class='description'>
                   <p>
@@ -93,14 +93,14 @@
                   </p>
                 </div>
                 <div class='source'>
-                  <a class='source-toggle' href='#' onclick="toggleCode('M000021-source'); return false">
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000020-source'); return false">
                     [show source]
                   </a>
-                  <pre id='M000021-source'>    <span class="ruby-comment cmt"># File lib/asset_hat/css.rb, line 43</span>&#x000A;43:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">add_asset_commit_ids</span>(<span class="ruby-identifier">css</span>)&#x000A;44:       <span class="ruby-identifier">update_css_urls</span>(<span class="ruby-identifier">css</span>, <span class="ruby-node">%w[images htc]</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">src</span>, <span class="ruby-identifier">quote</span><span class="ruby-operator">|</span>&#x000A;45:         <span class="ruby-comment cmt"># Get absolute path</span>&#x000A;46:         <span class="ruby-identifier">filepath</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-constant">ASSETS_DIR</span>, <span class="ruby-identifier">src</span>)&#x000A;47: &#x000A;48:         <span class="ruby-comment cmt"># Convert to relative path</span>&#x000A;49:         <span class="ruby-identifier">filepath</span>.<span class="ruby-identifier">sub!</span>(<span class="ruby-node">/^#{FileUtils.pwd}#{File::SEPARATOR}/</span>, <span class="ruby-value str">''</span>)&#x000A;50: &#x000A;51:         <span class="ruby-identifier">commit_id</span> = <span class="ruby-constant">AssetHat</span>.<span class="ruby-identifier">last_commit_id</span>(<span class="ruby-identifier">filepath</span>)&#x000A;52:         <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">commit_id</span>.<span class="ruby-identifier">present?</span>&#x000A;53:           <span class="ruby-node">&quot;url(#{quote}#{src}#{src =~ /\?/ ? '&amp;' : '?'}#{commit_id}#{quote})&quot;</span>&#x000A;54:         <span class="ruby-keyword kw">else</span>&#x000A;55:           <span class="ruby-node">&quot;url(#{quote}#{src}#{quote})&quot;</span>&#x000A;56:         <span class="ruby-keyword kw">end</span>&#x000A;57:       <span class="ruby-keyword kw">end</span>&#x000A;58:     <span class="ruby-keyword kw">end</span></pre>
+                  <pre id='M000020-source'>    <span class="ruby-comment cmt"># File lib/asset_hat/css.rb, line 50</span>&#x000A;50:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">add_asset_fingerprints</span>(<span class="ruby-identifier">css</span>)&#x000A;51:       <span class="ruby-identifier">update_css_urls</span>(<span class="ruby-identifier">css</span>, <span class="ruby-node">%w[images htc]</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">src</span>, <span class="ruby-identifier">quote</span><span class="ruby-operator">|</span>&#x000A;52:         <span class="ruby-comment cmt"># Get absolute path</span>&#x000A;53:         <span class="ruby-identifier">filepath</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-constant">ASSETS_DIR</span>, <span class="ruby-identifier">src</span>)&#x000A;54: &#x000A;55:         <span class="ruby-comment cmt"># Convert to relative path</span>&#x000A;56:         <span class="ruby-identifier">filepath</span>.<span class="ruby-identifier">sub!</span>(<span class="ruby-node">/^#{FileUtils.pwd}#{File::SEPARATOR}/</span>, <span class="ruby-value str">''</span>)&#x000A;57: &#x000A;58:         <span class="ruby-identifier">fingerprint</span> = <span class="ruby-constant">AssetHat</span><span class="ruby-operator">::</span><span class="ruby-constant">Fingerprint</span>.<span class="ruby-identifier">for_filepath</span>(<span class="ruby-identifier">filepath</span>)&#x000A;59: &#x000A;60:         <span class="ruby-identifier">filepath</span> = <span class="ruby-constant">AssetHat</span>.<span class="ruby-identifier">versioned_filepath</span>(<span class="ruby-identifier">src</span>, <span class="ruby-identifier">fingerprint</span>).<span class="ruby-identifier">sub</span>(<span class="ruby-regexp re">/^(\/[^\/]+)/</span>) { <span class="ruby-identifier">$1</span> <span class="ruby-operator">+</span> <span class="ruby-value str">'/bundles'</span> }&#x000A;61:         <span class="ruby-keyword kw">yield</span>(<span class="ruby-identifier">src</span>, <span class="ruby-identifier">filepath</span>) <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">block_given?</span>&#x000A;62: &#x000A;63:         <span class="ruby-node">&quot;url(#{quote}#{filepath}#{quote})&quot;</span>&#x000A;64:       <span class="ruby-keyword kw">end</span>&#x000A;65:     <span class="ruby-keyword kw">end</span></pre>
                 </div>
               </div>
-              <div class='method public-class' id='method-M000022'>
-                <a name='M000022'></a>
+              <div class='method public-class' id='method-M000021'>
+                <a name='M000021'></a>
                 <div class='synopsis'>
                   <span class='name'>add_asset_hosts</span>
                   <span class='arguments'>(css, asset_host, options={})</span>
@@ -137,17 +137,17 @@
                   </dl>
                 </div>
                 <div class='source'>
-                  <a class='source-toggle' href='#' onclick="toggleCode('M000022-source'); return false">
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000021-source'); return false">
                     [show source]
                   </a>
-                  <pre id='M000022-source'>    <span class="ruby-comment cmt"># File lib/asset_hat/css.rb, line 77</span>&#x000A;77:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">add_asset_hosts</span>(<span class="ruby-identifier">css</span>, <span class="ruby-identifier">asset_host</span>, <span class="ruby-identifier">options</span>={})&#x000A;78:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">css</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">asset_host</span>.<span class="ruby-identifier">blank?</span>&#x000A;79: &#x000A;80:       <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:ssl</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>)&#x000A;81: &#x000A;82:       <span class="ruby-identifier">update_css_urls</span>(<span class="ruby-identifier">css</span>, <span class="ruby-node">%w[images]</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">src</span>, <span class="ruby-identifier">quote</span><span class="ruby-operator">|</span>&#x000A;83:         <span class="ruby-identifier">computed_asset_host</span> = <span class="ruby-constant">AssetHat</span>.<span class="ruby-identifier">compute_asset_host</span>(&#x000A;84:           <span class="ruby-identifier">asset_host</span>, <span class="ruby-identifier">src</span>, <span class="ruby-identifier">options</span>.<span class="ruby-identifier">slice</span>(<span class="ruby-identifier">:ssl</span>))&#x000A;85:         <span class="ruby-node">&quot;url(#{quote}#{computed_asset_host}#{src}#{quote})&quot;</span>&#x000A;86:       <span class="ruby-keyword kw">end</span>&#x000A;87:     <span class="ruby-keyword kw">end</span></pre>
+                  <pre id='M000021-source'>    <span class="ruby-comment cmt"># File lib/asset_hat/css.rb, line 84</span>&#x000A;84:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">add_asset_hosts</span>(<span class="ruby-identifier">css</span>, <span class="ruby-identifier">asset_host</span>, <span class="ruby-identifier">options</span>={})&#x000A;85:       <span class="ruby-keyword kw">return</span> <span class="ruby-identifier">css</span> <span class="ruby-keyword kw">if</span> <span class="ruby-identifier">asset_host</span>.<span class="ruby-identifier">blank?</span>&#x000A;86: &#x000A;87:       <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:ssl</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-keyword kw">false</span>)&#x000A;88: &#x000A;89:       <span class="ruby-identifier">update_css_urls</span>(<span class="ruby-identifier">css</span>, <span class="ruby-node">%w[images]</span>) <span class="ruby-keyword kw">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">src</span>, <span class="ruby-identifier">quote</span><span class="ruby-operator">|</span>&#x000A;90:         <span class="ruby-identifier">computed_asset_host</span> = <span class="ruby-constant">AssetHat</span>.<span class="ruby-identifier">compute_asset_host</span>(&#x000A;91:           <span class="ruby-identifier">asset_host</span>, <span class="ruby-identifier">src</span>, <span class="ruby-identifier">options</span>.<span class="ruby-identifier">slice</span>(<span class="ruby-identifier">:ssl</span>))&#x000A;92:         <span class="ruby-node">&quot;url(#{quote}#{computed_asset_host}#{src}#{quote})&quot;</span>&#x000A;93:       <span class="ruby-keyword kw">end</span>&#x000A;94:     <span class="ruby-keyword kw">end</span></pre>
                 </div>
               </div>
-              <div class='method public-class' id='method-M000019'>
-                <a name='M000019'></a>
+              <div class='method public-class' id='method-M000018'>
+                <a name='M000018'></a>
                 <div class='synopsis'>
                   <span class='name'>min_filepath</span>
-                  <span class='arguments'>(filepath)</span>
+                  <span class='arguments'>(filepath, options={})</span>
                 </div>
                 <div class='description'>
                   <p>
@@ -155,16 +155,26 @@
                   href="CSS.html">CSS</a> asset:
                   </p>
                   <pre>AssetHat::CSS.min_filepath('public/stylesheets/bundles/application.css')&#x000A;  # =&gt; 'public/stylesheets/bundles/application.min.css'</pre>
+                  <p>
+                  Options:
+                  </p>
+                  <dl>
+                  <dt>fingerprint</dt><dd>Default is <tt>nil</tt>. If the fingerprint of the code to be stored in
+                  this file is known, specify it here to include it in the returned file path
+                  (e.g., <tt>path/to/application-a1b2c3.min.css</tt>).
+                  
+                  </dd>
+                  </dl>
                 </div>
                 <div class='source'>
-                  <a class='source-toggle' href='#' onclick="toggleCode('M000019-source'); return false">
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000018-source'); return false">
                     [show source]
                   </a>
-                  <pre id='M000019-source'>    <span class="ruby-comment cmt"># File lib/asset_hat/css.rb, line 14</span>&#x000A;14:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">min_filepath</span>(<span class="ruby-identifier">filepath</span>)&#x000A;15:       <span class="ruby-constant">AssetHat</span>.<span class="ruby-identifier">min_filepath</span>(<span class="ruby-identifier">filepath</span>, <span class="ruby-value str">'css'</span>)&#x000A;16:     <span class="ruby-keyword kw">end</span></pre>
+                  <pre id='M000018-source'>    <span class="ruby-comment cmt"># File lib/asset_hat/css.rb, line 21</span>&#x000A;21:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">min_filepath</span>(<span class="ruby-identifier">filepath</span>, <span class="ruby-identifier">options</span>={})&#x000A;22:       <span class="ruby-constant">AssetHat</span>.<span class="ruby-identifier">min_filepath</span>(<span class="ruby-identifier">filepath</span>, <span class="ruby-value str">'css'</span>, <span class="ruby-identifier">options</span>)&#x000A;23:     <span class="ruby-keyword kw">end</span></pre>
                 </div>
               </div>
-              <div class='method public-class' id='method-M000020'>
-                <a name='M000020'></a>
+              <div class='method public-class' id='method-M000019'>
+                <a name='M000019'></a>
                 <div class='synopsis'>
                   <span class='name'>minify</span>
                   <span class='arguments'>(input_string, options={})</span>
@@ -177,17 +187,17 @@
                   <dl>
                   <dt>engine</dt><dd>Default is <tt>:cssmin</tt>; see <a
                   href=CSS/Engines.html#method-c-cssmin><a
-                  href="CSS/Engines.html#M000024">Engines.cssmin</a></a>. Allowed values are
+                  href="CSS/Engines.html#M000023">Engines.cssmin</a></a>. Allowed values are
                   in ENGINES.
                   
                   </dd>
                   </dl>
                 </div>
                 <div class='source'>
-                  <a class='source-toggle' href='#' onclick="toggleCode('M000020-source'); return false">
+                  <a class='source-toggle' href='#' onclick="toggleCode('M000019-source'); return false">
                     [show source]
                   </a>
-                  <pre id='M000020-source'>    <span class="ruby-comment cmt"># File lib/asset_hat/css.rb, line 23</span>&#x000A;23:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">minify</span>(<span class="ruby-identifier">input_string</span>, <span class="ruby-identifier">options</span>={})&#x000A;24:       <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:engine</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">:cssmin</span>)&#x000A;25: &#x000A;26:       <span class="ruby-identifier">engine</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:engine</span>].<span class="ruby-identifier">to_sym</span>&#x000A;27:       <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">ENGINES</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">engine</span>)&#x000A;28:         <span class="ruby-identifier">raise</span> <span class="ruby-node">%{&#x000A;29:           Unknown CSS minification engine '#{engine}'.&#x000A;30:           Allowed: #{ENGINES.map{ |e| &quot;'#{e}'&quot; }.join(', ')}&#x000A;31:         }</span>.<span class="ruby-identifier">strip</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\s+/</span>, <span class="ruby-value str">' '</span>) <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span>&#x000A;32:       <span class="ruby-keyword kw">end</span>&#x000A;33: &#x000A;34:       <span class="ruby-constant">AssetHat</span><span class="ruby-operator">::</span><span class="ruby-constant">CSS</span><span class="ruby-operator">::</span><span class="ruby-constant">Engines</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">engine</span>, <span class="ruby-identifier">input_string</span>).<span class="ruby-identifier">strip</span>&#x000A;35:     <span class="ruby-keyword kw">end</span></pre>
+                  <pre id='M000019-source'>    <span class="ruby-comment cmt"># File lib/asset_hat/css.rb, line 30</span>&#x000A;30:     <span class="ruby-keyword kw">def</span> <span class="ruby-keyword kw">self</span>.<span class="ruby-identifier">minify</span>(<span class="ruby-identifier">input_string</span>, <span class="ruby-identifier">options</span>={})&#x000A;31:       <span class="ruby-identifier">options</span>.<span class="ruby-identifier">reverse_merge!</span>(<span class="ruby-identifier">:engine</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">:cssmin</span>)&#x000A;32: &#x000A;33:       <span class="ruby-identifier">engine</span> = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">:engine</span>].<span class="ruby-identifier">to_sym</span>&#x000A;34:       <span class="ruby-keyword kw">unless</span> <span class="ruby-constant">ENGINES</span>.<span class="ruby-identifier">include?</span>(<span class="ruby-identifier">engine</span>)&#x000A;35:         <span class="ruby-identifier">raise</span> <span class="ruby-node">%{&#x000A;36:           Unknown CSS minification engine '#{engine}'.&#x000A;37:           Allowed: #{ENGINES.map{ |e| &quot;'#{e}'&quot; }.join(', ')}&#x000A;38:         }</span>.<span class="ruby-identifier">strip</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp re">/\s+/</span>, <span class="ruby-value str">' '</span>) <span class="ruby-keyword kw">and</span> <span class="ruby-keyword kw">return</span>&#x000A;39:       <span class="ruby-keyword kw">end</span>&#x000A;40: &#x000A;41:       <span class="ruby-constant">AssetHat</span><span class="ruby-operator">::</span><span class="ruby-constant">CSS</span><span class="ruby-operator">::</span><span class="ruby-constant">Engines</span>.<span class="ruby-identifier">send</span>(<span class="ruby-identifier">engine</span>, <span class="ruby-identifier">input_string</span>).<span class="ruby-identifier">strip</span>&#x000A;42:     <span class="ruby-keyword kw">end</span></pre>
                 </div>
               </div>
             </div>

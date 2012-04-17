@@ -15,9 +15,6 @@
 #           - reset
 #           - application
 #     js:
-#       vendors:
-#         jquery:
-#           version: 1.6.1
 #       bundles:
 #         application:
 #           - utilities
@@ -60,15 +57,6 @@ js:
   engine: jsmin
   # Available minification engines:
   # http://mintdigital.github.com/asset_hat/doc/classes/AssetHat/JS/Engines.html
-
-  # Enable if you're using jQuery or other popular JS:
-  #
-  # vendors:
-  #   jquery:
-  #     version: 1.6.1
-  #
-  # Supported vendors:
-  # http://mintdigital.github.com/asset_hat/doc/classes/AssetHat/JS/Vendors.html
 
   bundles:
     js-bundle-1:
