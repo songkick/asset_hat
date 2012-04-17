@@ -29,6 +29,7 @@ Gem::Specification.new do |s|
     "doc/classes/AssetHat.html",
     "doc/classes/AssetHat/CSS.html",
     "doc/classes/AssetHat/CSS/Engines.html",
+    "doc/classes/AssetHat/Fingerprint.html",
     "doc/classes/AssetHat/JS.html",
     "doc/classes/AssetHat/JS/Engines.html",
     "doc/classes/AssetHatHelper.html",
@@ -38,7 +39,9 @@ Gem::Specification.new do |s|
     "doc/files/README_rdoc.html",
     "doc/files/lib/asset_hat/capistrano_rb.html",
     "doc/files/lib/asset_hat/css_rb.html",
+    "doc/files/lib/asset_hat/fingerprint_rb.html",
     "doc/files/lib/asset_hat/initializers/action_view_rb.html",
+    "doc/files/lib/asset_hat/initializers/cache_fingerprints_rb.html",
     "doc/files/lib/asset_hat/js_rb.html",
     "doc/files/lib/asset_hat/railtie_rb.html",
     "doc/files/lib/asset_hat/tasks/css_rb.html",
@@ -90,88 +93,23 @@ Gem::Specification.new do |s|
     "public/stylesheets/css-file-2-3.css",
     "rails/init.rb",
     "script/preview_github_readme",
+    "test/asset_hat_fingerprint_test.rb",
     "test/asset_hat_helper_test.rb",
     "test/asset_hat_test.rb",
     "test/test_helper.rb"
   ]
   s.homepage = "http://mintdigital.github.com/asset_hat"
   s.require_paths = ["lib"]
-  s.rubygems_version = "1.8.21"
   s.summary = "Your assets are covered."
 
-  if s.respond_to? :specification_version then
-    s.specification_version = 3
-
-    if Gem::Version.new(Gem::VERSION) >= Gem::Version.new('1.2.0') then
-      s.add_development_dependency(%q<flexmock>, ["~> 0.8.6"])
-      s.add_development_dependency(%q<hanna>, ["~> 0.1.12"])
-      s.add_development_dependency(%q<jeweler>, ["~> 1.6.0"])
-      s.add_development_dependency(%q<shoulda>, ["~> 2.10.2"])
-      s.add_development_dependency(%q<actionpack>, ["~> 3.0.0"])
-      s.add_development_dependency(%q<test-unit>, ["~> 2.0.0"])
-      s.add_development_dependency(%q<actionpack>, ["~> 3.0.0"])
-      s.add_development_dependency(%q<flexmock>, ["~> 0.8.6"])
-      s.add_development_dependency(%q<hanna>, ["~> 0.1.12"])
-      s.add_development_dependency(%q<jeweler>, ["~> 1.6.0"])
-      s.add_development_dependency(%q<shoulda>, ["~> 2.10.2"])
-      s.add_development_dependency(%q<simplecov>, ["~> 0.6.1"])
-      s.add_development_dependency(%q<test-unit>, ["~> 2.0.0"])
-      s.add_development_dependency(%q<actionpack>, ["~> 3.0.0"])
-      s.add_development_dependency(%q<flexmock>, ["~> 0.8.6"])
-      s.add_development_dependency(%q<hanna>, ["~> 0.1.12"])
-      s.add_development_dependency(%q<jeweler>, ["~> 1.6.0"])
-      s.add_development_dependency(%q<shoulda>, ["~> 2.10.2"])
-      s.add_development_dependency(%q<simplecov>, ["~> 0.6.1"])
-      s.add_development_dependency(%q<test-unit>, ["~> 2.0.0"])
-      s.add_runtime_dependency(%q<cssmin>, ["~> 1.0.2"])
-      s.add_runtime_dependency(%q<jsmin>, ["~> 1.0.1"])
-    else
-      s.add_dependency(%q<flexmock>, ["~> 0.8.6"])
-      s.add_dependency(%q<hanna>, ["~> 0.1.12"])
-      s.add_dependency(%q<jeweler>, ["~> 1.6.0"])
-      s.add_dependency(%q<shoulda>, ["~> 2.10.2"])
-      s.add_dependency(%q<actionpack>, ["~> 3.0.0"])
-      s.add_dependency(%q<test-unit>, ["~> 2.0.0"])
-      s.add_dependency(%q<actionpack>, ["~> 3.0.0"])
-      s.add_dependency(%q<flexmock>, ["~> 0.8.6"])
-      s.add_dependency(%q<hanna>, ["~> 0.1.12"])
-      s.add_dependency(%q<jeweler>, ["~> 1.6.0"])
-      s.add_dependency(%q<shoulda>, ["~> 2.10.2"])
-      s.add_dependency(%q<simplecov>, ["~> 0.6.1"])
-      s.add_dependency(%q<test-unit>, ["~> 2.0.0"])
-      s.add_dependency(%q<actionpack>, ["~> 3.0.0"])
-      s.add_dependency(%q<flexmock>, ["~> 0.8.6"])
-      s.add_dependency(%q<hanna>, ["~> 0.1.12"])
-      s.add_dependency(%q<jeweler>, ["~> 1.6.0"])
-      s.add_dependency(%q<shoulda>, ["~> 2.10.2"])
-      s.add_dependency(%q<simplecov>, ["~> 0.6.1"])
-      s.add_dependency(%q<test-unit>, ["~> 2.0.0"])
-      s.add_dependency(%q<cssmin>, ["~> 1.0.2"])
-      s.add_dependency(%q<jsmin>, ["~> 1.0.1"])
-    end
-  else
-    s.add_dependency(%q<flexmock>, ["~> 0.8.6"])
-    s.add_dependency(%q<hanna>, ["~> 0.1.12"])
-    s.add_dependency(%q<jeweler>, ["~> 1.6.0"])
-    s.add_dependency(%q<shoulda>, ["~> 2.10.2"])
-    s.add_dependency(%q<actionpack>, ["~> 3.0.0"])
-    s.add_dependency(%q<test-unit>, ["~> 2.0.0"])
-    s.add_dependency(%q<actionpack>, ["~> 3.0.0"])
-    s.add_dependency(%q<flexmock>, ["~> 0.8.6"])
-    s.add_dependency(%q<hanna>, ["~> 0.1.12"])
-    s.add_dependency(%q<jeweler>, ["~> 1.6.0"])
-    s.add_dependency(%q<shoulda>, ["~> 2.10.2"])
-    s.add_dependency(%q<simplecov>, ["~> 0.6.1"])
-    s.add_dependency(%q<test-unit>, ["~> 2.0.0"])
-    s.add_dependency(%q<actionpack>, ["~> 3.0.0"])
-    s.add_dependency(%q<flexmock>, ["~> 0.8.6"])
-    s.add_dependency(%q<hanna>, ["~> 0.1.12"])
-    s.add_dependency(%q<jeweler>, ["~> 1.6.0"])
-    s.add_dependency(%q<shoulda>, ["~> 2.10.2"])
-    s.add_dependency(%q<simplecov>, ["~> 0.6.1"])
-    s.add_dependency(%q<test-unit>, ["~> 2.0.0"])
-    s.add_dependency(%q<cssmin>, ["~> 1.0.2"])
-    s.add_dependency(%q<jsmin>, ["~> 1.0.1"])
-  end
+  s.add_development_dependency(%q<actionpack>, ["~> 3.0.0"])
+  s.add_development_dependency(%q<flexmock>, ["~> 0.8.6"])
+  s.add_development_dependency(%q<hanna>, ["~> 0.1.12"])
+  s.add_development_dependency(%q<jeweler>, ["~> 1.6.0"])
+  s.add_development_dependency(%q<shoulda>, ["~> 2.10.2"])
+  s.add_development_dependency(%q<simplecov>, ["~> 0.6.1"])
+  s.add_development_dependency(%q<test-unit>, ["~> 2.0.0"])
+  s.add_runtime_dependency(%q<cssmin>, ["~> 1.0.2"])
+  s.add_runtime_dependency(%q<jsmin>, ["~> 1.0.1"])
 end
 
