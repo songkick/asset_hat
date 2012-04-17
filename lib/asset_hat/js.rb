@@ -1,5 +1,4 @@
 require 'jsmin'
-require File.join(File.dirname(__FILE__), 'js', 'vendors')
 
 module AssetHat
   # Methods for minifying JavaScript.
@@ -7,10 +6,6 @@ module AssetHat
     # A list of supported minification
     # <a href=JS/Engines.html>engine</a> names.
     ENGINES = [:weak, :jsmin]
-
-    # A list of supported
-    # <a href=JS/Vendors.html>3rd-party JavaScript plugin/vendor</a> names.
-    VENDORS = Vendors::VENDORS
 
     # Returns the expected path for the minified version of a JS asset:
     #

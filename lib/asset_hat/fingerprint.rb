@@ -20,6 +20,7 @@ module AssetHat
     # Accepts the path to a file in the local filesystem, and returns the
     # alphanumeric fingerprint for the contents of that file.
     def self.for_filepath(filepath)
+      return '' unless File.file?(filepath)
       code = File.read(filepath)
       Fingerprint.for_string(code)
     end

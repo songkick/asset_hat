@@ -68,6 +68,7 @@ module AssetHatHelper
       # environments), skip this, and instead default to Rails' cache busting
       # strategy (mtime-based before Rails 3.1).
       sources.map! do |src|
+        fingerprint = ''
         if src =~ %r{^http(s?)://} || src =~ %r{^//}
           # Absolute URL; do nothing
         elsif src =~ /^#{AssetHat.bundles_dir}\//
@@ -186,17 +187,6 @@ module AssetHatHelper
   #   include_js 'application.js'
   #   =>  <script src="/javascripts/application.js" type="text/javascript"></script>
   #
-  # Include jQuery:
-  #   # Development/test environment:
-  #   include_js :jquery
-  #   =>  <script src="/javascripts/jquery-VERSION.min.js" ...></script>
-  #
-  #   # Staging/production environment:
-  #   include_js :jquery
-  #   =>  <script src="http://ajax.googleapis.com/.../jquery.min.js" ...></script>
-  #     # Set jQuery versions either in `config/assets.yml`, or by using
-  #     # `include_js :jquery, :version => '1.6.1'`.
-  #
   # Include a bundle of JS files (i.e., a concatenated set of files;
   # configure in <code>config/assets.yml</code>):
   #   include_js :bundle => 'application'
@@ -221,15 +211,6 @@ module AssetHatHelper
   #   include_js 'application.js', :only_url => true
   #   =>  '/javascripts/application.js', :only_url => true
   #
-  # Get the URL for jQuery:
-  #   # Development/test environment:
-  #   include_js :jquery, :only_url => true
-  #   =>  '/javascripts/jquery-VERSION.min.js'
-  #
-  #   # Staging/production environment:
-  #   include_js :jquery, :only_url => true
-  #   =>  'http://ajax.googleapis.com/.../jquery.min.js'
-  #
   # Get the URL for a bundle of JS files when environment *enables* caching
   # (e.g., staging, production):
   #   include_js :bundle => 'application', :only_url => true
@@ -246,48 +227,6 @@ module AssetHatHelper
   # Get URLs for multiple JS files manually:
   #   include_js 'json2', 'application', :only_url => true
   #   => ['/javascripts/json2.js', '/javascripts/application.js']
-  #
-  # Load JS files with {LABjs}[http://labjs.com] (hosted either from cdnjs or
-  # your own web server, if found in <code>public/javascripts/</code>):
-  #
-  #   # config/assets.yml:
-  #   js:
-  #     vendors:
-  #       lab_js:
-  #         version: 1.x.x
-  #
-  #   # Usage:
-  #   include_js :jquery, :bundle => 'application', :loader => :lab_js
-  #   =>  <script src="http://ajax.cdnjs.com/.../1.x.x/LAB.min.js" ...></script>
-  #       <script type="text/javascript">
-  #       window.$LABinst=$LAB.
-  #         script('http://ajax.googleapis.com/.../jquery.min.js').wait().
-  #         script('/javascripts/bundles/application.min.js').wait();
-  #       </script>
-  #
-  #   # For advanced fine-tuning, build the LABjs calls manually (based on
-  #   # example from http://labjs.com/documentation.php ):
-  #   <script>
-  #      window.$LABinst = $LAB.
-  #        script('<%= include_js 'framework', :only_url => true %>').wait().
-  #        script('<%= include_js 'plugin.framework.js',
-  #                               :only_url => true %>').
-  #        script('<%= include_js 'myplugin.framework.js',
-  #                               :only_url => true %>').wait().
-  #        script('<%= include_js 'init.js', :only_url => true %>').wait();
-  #   </script>
-  #
-  #   # If you want to execute an inline <script> block that relies on any
-  #   # of these dependencies, use the JS variable `window.$LABinst`.
-  #   # Example (using jQuery to handle when DOM is ready):
-  #   <script>
-  #   window.$LABinst(function(){
-  #     console.log('JS dependencies are ready');
-  #     $(function(){
-  #       console.log('DOM is ready');
-  #     });
-  #   });
-  #   </script>
   def include_js(*args)
     return if args.blank?
 
@@ -302,39 +241,9 @@ module AssetHatHelper
       htmls = []
       include_assets_options = options.except(:ssl, :version)
 
-      loader = options.delete(:loader)
-      include_assets_options.merge!(:only_url => true) if loader
-
-      # Get vendor HTML/URLs
-      included_vendors = (args & AssetHat::JS::VENDORS)
-
-      # Add HTML inclusions for vendors
-      included_vendors.each do |vendor|
-        args.delete vendor
-        src = AssetHat::JS::Vendors.source_for(
-                vendor, options.slice(:ssl, :version))
-        htmls << include_assets(:js, src,
-                  include_assets_options.merge(:cache => true).
-                                         except(:bundle, :bundles))
-      end
-
-      # Get non-vendor HTML/URLs
+      # Get HTML/URLs
       htmls << include_assets(:js, *(args + [include_assets_options]))
       htmls.reject!(&:blank?)
-
-      if loader
-        # `htmls` actually contains URLs; convert to an HTML/JS block
-        urls  = htmls.dup.flatten
-        htmls = []
-
-        case loader
-        when :lab_js
-          htmls << include_js(:lab_js)
-          htmls << '<script type="text/javascript">'
-          htmls << AssetHat::JS::Vendors.loader_js(:lab_js, :urls => urls)
-          htmls << '</script>'
-        end
-      end
 
       # Convert to a URL (string), array of URLs, or one long HTML string
       html =  if options[:only_url]
