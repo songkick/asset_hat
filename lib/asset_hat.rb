@@ -293,7 +293,7 @@ module AssetHat
       case host.is_a?(Proc) ?
            host.arity : host.method(:call).arity
       when 2
-        if defined?(ActionDispatch)
+        if defined?(ActionDispatch::Request)
           request_class = ActionDispatch::Request
         else # Rails 2.x
           request_class = ActionController::Request
